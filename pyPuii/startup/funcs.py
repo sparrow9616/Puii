@@ -41,7 +41,7 @@ from telethon.tl.types import (
     InputMessagesFilterDocument,
 )
 from telethon.utils import get_peer_id
-
+from decouple import config, RepositoryEnv
 from .. import LOGS, ULTConfig
 from ..fns.helper import download_file, inline_mention, updater
 
@@ -95,7 +95,10 @@ def update_envs():
             envs in ["LOG_CHANNEL", "BOT_TOKEN", "BOTMODE", "DUAL_MODE", "language"]
             or envs in udB.keys()
         ):
-            udB.set_key(envs, os.environ[envs])
+            if _value := os.environ.get(envs):
+                udB.set_key(envs, _value)
+            else:
+                udB.set_key(envs, config.config.get(envs))
 
 
 async def startup_stuff():
